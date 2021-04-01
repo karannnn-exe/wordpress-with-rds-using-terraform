@@ -140,8 +140,8 @@ resource "aws_key_pair" "mynewwpkey" {
 
 
 resource "aws_launch_configuration" "mylaunchconfiguration" {
-  image_id               = "ami-042e8287309f5df03"
-  instance_type          = "t2.micro"
+  image_id               = "ami-0742b4e673072066f"
+  instance_type          = "t2.large"
   security_groups        = [aws_security_group.wordpresstask-sg.id]
 
   key_name               = "mynewwpkey"
@@ -175,39 +175,14 @@ resource "aws_autoscaling_group" "myasg" {
 }
 
 
-#Creating sg for load balancer
 
-
-resource "aws_security_group" "elb_http" {
-  name        = "elb_http"
-  description = "Allow HTTP traffic to instances through Elastic Load Balancer"
-  vpc_id = aws_vpc.wordpressvpc.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "Allow HTTP through ELB Security Group"
-  }
-}
 
 #Creating load-balancer
 
 resource "aws_elb" "web_elb" {
   name = "web-elb"
   security_groups = [
-    aws_security_group.elb_http.id
+    aws_security_group.wordpresstask-sg.id
   ]
   subnets = [
     aws_subnet.public-subnet.id,
@@ -232,4 +207,45 @@ resource "aws_elb" "web_elb" {
   }
 
 }
+
+
+# Launching db_subnet_group
+
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = [aws_subnet.public-subnet.id,aws_subnet.private-subnet.id]
+
+  tags = {
+    Name = "My DB subnet group"
+  }
+}
+
+
+
+
+
+
+# Launching RDS db instance
+
+resource "aws_db_instance" "myrds" {
+  allocated_storage    = 20
+  max_allocated_storage = 100
+  storage_type         = "gp2"
+  engine               = "mysql"
+  engine_version       = "8.0.20"
+  instance_class       = "db.t2.medium"
+
+db_subnet_group_name    = aws_db_subnet_group.default.id
+  name                 = "karandeepsingh"
+  username             = "karandeepsingh"
+  password             = "karandeepsingh12345"
+  parameter_group_name = "default.mysql8.0"
+  publicly_accessible = false
+ vpc_security_group_ids     = [aws_security_group.wordpresstask-sg.id]
+  
+  skip_final_snapshot = true 
+
+}
+
+
 
