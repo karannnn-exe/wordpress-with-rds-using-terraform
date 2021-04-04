@@ -1,7 +1,7 @@
 provider "aws" {
   region     = "us-east-1"
-  access_key = "AKIAQT62GFZYGK4JTTJ5"
-  secret_key = "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"
+  access_key = "access-key"
+  secret_key = "secret-key"
 
 }
 
@@ -108,9 +108,9 @@ resource "aws_route_table_association" "publicassociation" {
 
 #creating_keypair
 
-resource "aws_key_pair" "mynewwpkey" {
-  key_name   = "mynewwpkey"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgHMdcLMoPGCVIdFhRSRPOCN0cuZCXcR5Me30h7NVHkPd1UQAdM2P2eA7q/PFzEqqQYsV7wQGDMZ/DJ0hgiFpZkwMdju6m1ZaGbsJOu9i8donic+nHDoqmy5RR+dVK6OdxZzwPTTQcGhmSoXSm8E7VQmM2xYyP6sX/PlIn+kfPODREzOh4ooJKb+dK7Mq+FIqDBlpOFV1Tj0/AmqryK0+6FdqepHUfm+UN1hAcwpaXRLCyyqRsn/FFfYLziwMSI+h7LuV08GhblZeR3kZu/QWZojGJZ6MQ7MyJ6w8d3tfRjNfbC9PWzpCcP1Qr2zDca3MMl3ukR4soYn8nE1KoZ7QT root@ip-172-31-43-67.us-west-2.compute.internal"
+resource "aws_key_pair" "wordpresskeys" {
+  key_name   = "wordpresskeys"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhb2ERyKSJFHKGZH2lnQr8kT2w3yqp3bOehk6pBe2ffpIippIE2SVzhSFpFzEjJiFdIoorn35RmdjKCABwKqcVsYNz28ZbqXTeaRWtJAmnsQAGfmKKiSZMOFi2/BQGwaoFMRjf062kEn9pQEkfxQS7m/auJmkUxZY/MmB7Fpwz6I0EIpRH1Un4cgk6ksfyRvCTjym8R5vIRxdDJ1HgiwZbvtap8+ZA2rerv7hnO146vwSa2hfDzCLuNUVVSo6/lqiCeN4ISySiysJoS/9c+dvU8n+eOY0lU2RHcMYegKE+coaH14Fofgq2jLkI9/sG+B/OnyCSLdMu6wCBsY6ibKup root@ip-172-31-80-18.ec2.internal"
 }
 
 #creating_asg
@@ -120,7 +120,7 @@ resource "aws_launch_configuration" "mylaunchconfiguration" {
   instance_type          = "t2.micro"
   security_groups        = [aws_security_group.wordpresstask-sg.id]
 
-  key_name               = "mynewwpkey"
+  key_name               = "wordpresskeys"
   user_data = file("script.sh")
 
   lifecycle {
@@ -223,4 +223,3 @@ resource "aws_db_instance" "myrds" {
   skip_final_snapshot = true 
 
 }
-
